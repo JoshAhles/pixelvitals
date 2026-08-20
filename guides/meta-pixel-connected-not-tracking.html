@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta Pixel Says "Connected" But Isn't Tracking Purchases on Shopify</title>
+<meta name="description" content="Your Meta Pixel shows connected on Shopify but Ads Manager reports zero purchases? Why the status badge lies, how to confirm events stopped, and how to fix each cause.">
+<link rel="canonical" href="https://pixelvitals.com/guides/meta-pixel-connected-not-tracking">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+ "headline":"Meta Pixel Says Connected But Isn't Tracking Purchases on Shopify",
+ "datePublished":"2026-08-20","dateModified":"2026-08-20",
+ "author":{"@type":"Organization","name":"PixelVitals","url":"https://pixelvitals.com"},
+ "publisher":{"@type":"Organization","name":"PixelVitals"}}
+</script>
+<style>
+:root{--paper:#F7F3EA;--card:#FFFDF7;--ink:#211D15;--muted:#6E685B;--line:#E4DCC9;--accent:#E8442A;--accent-deep:#C33619;--ok:#1E7A4F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.75 "Instrument Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep)}
+main{max-width:720px;margin:0 auto;padding:56px 24px 90px}
+h1,h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;line-height:1.08;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(2rem,5.4vw,3.1rem);margin:18px 0 10px}
+h2{font-size:1.5rem;margin:44px 0 12px}
+p,li{color:#3B362B}
+.meta{font:500 12.5px "IBM Plex Mono",monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.crumb{font:500 13px "IBM Plex Mono",monospace}
+ol,ul{padding-left:1.3em}
+li{margin:10px 0}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--card);border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.callout{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:22px 24px;margin:36px 0;box-shadow:5px 5px 0 var(--ink)}
+.cta{background:var(--ink);color:var(--paper);border-radius:14px;padding:30px;margin-top:56px}
+.cta h2{margin:0 0 10px;color:var(--paper)}
+.cta p{color:#B9B29D}
+.btn{display:inline-block;background:var(--accent);color:#FFF6F0;font:600 15.5px "Instrument Sans",sans-serif;padding:13px 26px;border-radius:99px;margin-top:18px;text-decoration:none}
+footer{max-width:720px;margin:0 auto;padding:0 24px 48px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<a class="crumb" href="/">← pixelvitals.com</a>
+<p class="meta" style="margin-top:34px">Guide · Updated August 2026</p>
+<h1>Meta Pixel says “connected” — but isn't tracking purchases</h1>
+<p>This is one of the most-reported problems in the entire Shopify ecosystem, and the reviews of the official Facebook &amp; Instagram app are full of it: <em>“This is not giving us any pixel whatsoever.” “My pixel is suddenly not firing.” “Always having an issue with pixels value.”</em> The badge says connected; Ads Manager says nobody's buying. One of them is lying, and it's the badge.</p>
+
+<h2>Why the "connected" badge lies</h2>
+<p>"Connected" means Shopify holds a valid link to your Meta business assets. It does not mean events are being generated on your storefront, accepted by Meta, or attributed to your ads. Every one of those stages can fail independently while the badge stays green:</p>
+<ul>
+  <li>Event generation can stop after Shopify checkout or theme changes.</li>
+  <li>Meta can silently discard events it considers malformed or duplicated.</li>
+  <li>Data-quality throttles and account reviews pause processing without notice.</li>
+  <li>Token/permission changes (password resets, Business Manager edits, personnel changes) can invalidate the pipeline behind the scenes.</li>
+</ul>
+
+<h2>Confirm it in five minutes</h2>
+<ol>
+  <li><strong>Meta Events Manager → Data Sources → your pixel.</strong> Look at the event graph for the last 7 days. A cliff or a flatline in <code>Purchase</code> events while your Shopify Orders page shows steady sales is your confirmation.</li>
+  <li><strong>Test Events tab:</strong> enter your store URL and click around your own store. Watch whether <code>PageView</code>, <code>ViewContent</code>, <code>AddToCart</code> appear live.</li>
+  <li><strong>Compare totals:</strong> Purchases Meta received in 48h vs. orders Shopify recorded in the same 48h. Expect a gap of 10–30% (ad blockers, iOS, consent). A gap of 80–100% means broken tracking, not privacy loss.</li>
+</ol>
+
+<h2>Fixes, matched to cause</h2>
+<ul>
+  <li><strong>Started after a checkout/theme change?</strong> Old script-based tracking died with <code>checkout.liquid</code>. Remove legacy snippets and rely on the channel app's native pixel, or implement a Customer Events web pixel. Duplicate legacy + native tracking is itself a cause of discarded events.</li>
+  <li><strong>Events fire in Test Events but purchases are missing?</strong> Classic checkout-scope failure. Verify the pixel is set at the sales-channel level (not just theme), and that Conversions API is enabled in the channel app settings — server-side events survive what browser events don't.</li>
+  <li><strong>Zero events of any kind?</strong> Disconnect and reconnect the Facebook &amp; Instagram channel with an admin account. Confirm in Business Manager that the pixel still lists your store's domain and the connection user still has permissions.</li>
+  <li><strong>Events arrive but "pixel value" errors / wrong amounts?</strong> Usually a second app also sending purchase events with different parameters. Audit installed apps for anything touching the pixel and remove the overlap.</li>
+  <li><strong>Everything looks right and it's still dead?</strong> Check Business Manager notifications for data-quality or policy flags — processing pauses often surface only there, days late.</li>
+</ul>
+
+<div class="callout">
+  <strong>The pattern to internalize:</strong> every failure above was discoverable the day it happened by comparing Meta's purchase count against Shopify's order count. Stores lose money not because these bugs exist, but because the comparison only happens after ROAS has already cratered.
+</div>
+
+<div class="cta">
+  <h2>Get the alert Meta will never send you</h2>
+  <p>PixelVitals runs that comparison around the clock — Meta, Google, and TikTok events vs. your actual Shopify orders — and alerts you within minutes when events go silent or drift, including the estimated untracked revenue since. Nothing installed on your storefront.</p>
+  <a class="btn" href="/#early">Get early access — $19/mo locked for life</a>
+</div>
+</main>
+<footer>© 2026 PixelVitals · <a href="/">pixelvitals.com</a> · <a href="mailto:hello@pixelvitals.com">hello@pixelvitals.com</a></footer>
+</body>
+</html>

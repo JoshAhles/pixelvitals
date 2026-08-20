@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopify Pixel Not Working? How to Check and Fix It (2026)</title>
+<meta name="description" content="Your Shopify pixel can show 'connected' while sending nothing. A step-by-step way to check whether your Meta, Google, or TikTok pixel is actually firing — and fix it.">
+<link rel="canonical" href="https://pixelvitals.com/guides/shopify-pixel-not-working">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+ "headline":"Shopify Pixel Not Working? How to Check and Fix It",
+ "datePublished":"2026-08-20","dateModified":"2026-08-20",
+ "author":{"@type":"Organization","name":"PixelVitals","url":"https://pixelvitals.com"},
+ "publisher":{"@type":"Organization","name":"PixelVitals"}}
+</script>
+<style>
+:root{--paper:#F7F3EA;--card:#FFFDF7;--ink:#211D15;--muted:#6E685B;--line:#E4DCC9;--accent:#E8442A;--accent-deep:#C33619;--ok:#1E7A4F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.75 "Instrument Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep)}
+main{max-width:720px;margin:0 auto;padding:56px 24px 90px}
+h1,h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;line-height:1.08;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(2rem,5.4vw,3.1rem);margin:18px 0 10px}
+h2{font-size:1.5rem;margin:44px 0 12px}
+p,li{color:#3B362B}
+.meta{font:500 12.5px "IBM Plex Mono",monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.crumb{font:500 13px "IBM Plex Mono",monospace}
+ol,ul{padding-left:1.3em}
+li{margin:10px 0}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--card);border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.callout{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:22px 24px;margin:36px 0;box-shadow:5px 5px 0 var(--ink)}
+.cta{background:var(--ink);color:var(--paper);border-radius:14px;padding:30px;margin-top:56px}
+.cta h2{margin:0 0 10px;color:var(--paper)}
+.cta p{color:#B9B29D}
+.btn{display:inline-block;background:var(--accent);color:#FFF6F0;font:600 15.5px "Instrument Sans",sans-serif;padding:13px 26px;border-radius:99px;margin-top:18px;text-decoration:none}
+footer{max-width:720px;margin:0 auto;padding:0 24px 48px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<a class="crumb" href="/">← pixelvitals.com</a>
+<p class="meta" style="margin-top:34px">Guide · Updated August 2026</p>
+<h1>Shopify pixel not working? How to check and fix it</h1>
+<p>Here's the uncomfortable truth behind most "my ads suddenly stopped converting" panics: the ads are fine — the <em>tracking</em> broke, silently, days ago. Shopify pixels (Meta, Google, TikTok) can show <strong>“connected”</strong> in your admin while sending nothing at all. This guide gives you a fast, reliable way to find out, and what to do about it.</p>
+
+<h2>Step 1: Don't trust the "connected" status</h2>
+<p>The connection badge in your Shopify sales-channel settings only means the OAuth link between Shopify and the ad platform exists. It says nothing about whether events are flowing <em>right now</em>. Merchants routinely report pixels that show connected for weeks while recording zero purchases. Shopify can also throttle a pixel's data flow with no banner, email, or admin warning — the badge stays green while conversion events silently stop.</p>
+
+<h2>Step 2: Compare reported events against real orders</h2>
+<p>This is the one check that catches every failure mode, including partial under-reporting:</p>
+<ol>
+  <li>Open your ad platform's event tool — <strong>Meta Events Manager</strong> (Data Sources → your pixel), <strong>Google Ads → Conversions</strong> or GA4's Realtime report, or <strong>TikTok Events Manager</strong>.</li>
+  <li>Note how many <code>Purchase</code> events it received in the last 24–48 hours.</li>
+  <li>Open Shopify admin → Orders, and count actual orders in the same window.</li>
+  <li>They will never match perfectly (ad blockers, iOS privacy, consent decline cost you 10–30%). But if the platform saw <strong>far fewer purchases than Shopify took — or zero</strong> — your tracking is broken, not your ads.</li>
+</ol>
+
+<h2>Step 3: Run a live test event</h2>
+<ol>
+  <li>In Meta Events Manager, open the <strong>Test Events</strong> tab, enter your store URL, and browse your own store: view a product, add to cart, start checkout.</li>
+  <li>Each action should appear within seconds. If <code>PageView</code> fires but <code>AddToCart</code>/<code>InitiateCheckout</code> don't, your event wiring is partially broken.</li>
+  <li>For checkout and purchase events, place a cheap real test order (you can refund it). Purchase events failing while everything else fires is the classic post-checkout-migration symptom.</li>
+</ol>
+
+<h2>The usual culprits, in order of likelihood</h2>
+<ul>
+  <li><strong>Shopify's checkout changes.</strong> Checkout extensibility removed <code>checkout.liquid</code> and the old <code>additional scripts</code> box. Any tracking that lived there died when your store migrated — quietly. Fix: use the official channel app's native integration or a Customer Events (web pixel) implementation.</li>
+  <li><strong>Consent/cookie banner misconfiguration.</strong> If your consent app defaults to "denied" and nothing updates it, you're dropping every event in regions that require consent — and often everywhere, if it's misconfigured.</li>
+  <li><strong>App conflicts.</strong> Two apps both injecting the same pixel ID produces duplicate or malformed events; platforms sometimes respond by discarding them. If you've installed or removed a tracking app recently, that's your prime suspect.</li>
+  <li><strong>An expired token or disconnected asset.</strong> Meta business account changes, password resets, or permission changes can invalidate the connection behind the scenes while the badge stays green. Disconnect and reconnect the channel app.</li>
+  <li><strong>Platform-side throttling or review.</strong> Merchant Center suspensions and Meta data-quality throttles stop event processing with little or no notice.</li>
+</ul>
+
+<div class="callout">
+  <strong>Rule of thumb:</strong> whatever the cause, the expensive part is the <em>time to discovery</em>. A pixel that breaks Monday and gets caught Tuesday is an annoyance. Caught the following week, it's hundreds of dollars of ads optimizing against a dead signal and audiences going stale.
+</div>
+
+<h2>How to catch it in minutes instead of weeks</h2>
+<p>Every fix above is discoverable the moment you look — the problem is that nobody looks daily. Smart merchants automate the Step-2 comparison in a spreadsheet and check it every morning. That works; it also takes 20–30 minutes a week, forever.</p>
+
+<div class="cta">
+  <h2>Or let PixelVitals watch it for you</h2>
+  <p>PixelVitals compares what your Meta, Google, and TikTok pixels report against your actual Shopify orders, around the clock, and alerts you the moment events go silent or drift — with the estimated untracked revenue since. Nothing added to your storefront; works alongside whatever tracking you already run.</p>
+  <a class="btn" href="/#early">Get early access — $19/mo locked for life</a>
+</div>
+</main>
+<footer>© 2026 PixelVitals · <a href="/">pixelvitals.com</a> · <a href="mailto:hello@pixelvitals.com">hello@pixelvitals.com</a></footer>
+</body>
+</html>

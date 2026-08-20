@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GA4 Purchase Event Not Firing on Shopify: Causes and Fixes</title>
+<meta name="description" content="GA4 shows sessions but no purchase events from your Shopify store? Why checkout changes silently killed purchase tracking for many stores, how to confirm it, and how to fix it.">
+<link rel="canonical" href="https://pixelvitals.com/guides/ga4-purchase-event-not-firing-shopify">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+ "headline":"GA4 Purchase Event Not Firing on Shopify: Causes and Fixes",
+ "datePublished":"2026-08-20","dateModified":"2026-08-20",
+ "author":{"@type":"Organization","name":"PixelVitals","url":"https://pixelvitals.com"},
+ "publisher":{"@type":"Organization","name":"PixelVitals"}}
+</script>
+<style>
+:root{--paper:#F7F3EA;--card:#FFFDF7;--ink:#211D15;--muted:#6E685B;--line:#E4DCC9;--accent:#E8442A;--accent-deep:#C33619;--ok:#1E7A4F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.75 "Instrument Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep)}
+main{max-width:720px;margin:0 auto;padding:56px 24px 90px}
+h1,h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;line-height:1.08;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(2rem,5.4vw,3.1rem);margin:18px 0 10px}
+h2{font-size:1.5rem;margin:44px 0 12px}
+p,li{color:#3B362B}
+.meta{font:500 12.5px "IBM Plex Mono",monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.crumb{font:500 13px "IBM Plex Mono",monospace}
+ol,ul{padding-left:1.3em}
+li{margin:10px 0}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--card);border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.callout{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:22px 24px;margin:36px 0;box-shadow:5px 5px 0 var(--ink)}
+.cta{background:var(--ink);color:var(--paper);border-radius:14px;padding:30px;margin-top:56px}
+.cta h2{margin:0 0 10px;color:var(--paper)}
+.cta p{color:#B9B29D}
+.btn{display:inline-block;background:var(--accent);color:#FFF6F0;font:600 15.5px "Instrument Sans",sans-serif;padding:13px 26px;border-radius:99px;margin-top:18px;text-decoration:none}
+footer{max-width:720px;margin:0 auto;padding:0 24px 48px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<a class="crumb" href="/">← pixelvitals.com</a>
+<p class="meta" style="margin-top:34px">Guide · Updated August 2026</p>
+<h1>GA4 purchase event not firing on Shopify</h1>
+<p>The symptom: GA4 shows healthy sessions, product views, even <code>begin_checkout</code> — and then nothing. Zero <code>purchase</code> events, or a fraction of what Shopify's own Orders page shows. Multiple stores discovered this <em>weeks</em> late, because every other number looked normal. Here's why it happens and how to fix each cause.</p>
+
+<h2>The big one: Shopify's checkout changes killed script-based tracking</h2>
+<p>When Shopify deprecated <code>checkout.liquid</code> and the "Additional scripts" box on the order status page, every GA4 setup that relied on scripts in those locations lost its purchase event — while all pre-checkout events kept working, which is exactly why the breakage is so hard to notice. If your GA4 purchase tracking predates your store's checkout-extensibility migration and you never re-implemented it, this is almost certainly your cause.</p>
+<p><strong>Fix:</strong> use the official Google &amp; YouTube channel app's GA4 integration (purchase events come from Shopify's pipeline, not your scripts), or re-implement via a <strong>Customer Events</strong> web pixel with a <code>checkout_completed</code> subscription. Remove the dead legacy scripts either way.</p>
+
+<h2>Other causes worth checking</h2>
+<ul>
+  <li><strong>Duplicate GA4 properties or tags.</strong> The channel app plus a theme-embedded gtag plus a tag manager container can produce two or three streams; merchants have reported duplicated properties corrupting their data after app-driven setup. Pick one source of truth and remove the rest.</li>
+  <li><strong>Consent mode defaults.</strong> With consent mode enforced and your banner defaulting to denied, GA4 can drop conversion events wholesale in consent regions. Verify your consent tool actually updates the GA4 consent state on accept.</li>
+  <li><strong>Wrong stream / measurement ID.</strong> After a rebuild or theme swap, it's common to find events flowing to an old GA4 property. Confirm the measurement ID in your live storefront source matches the property you're staring at.</li>
+  <li><strong>Currency/value parameter errors.</strong> Purchases can arrive but be rejected or mis-reported if value/currency parameters are malformed by a customizing app.</li>
+</ul>
+
+<h2>How to confirm in 10 minutes</h2>
+<ol>
+  <li>Open GA4 → Reports → Realtime, place a low-value test order, and watch for the <code>purchase</code> event. (Refund it after.)</li>
+  <li>In GA4 → Admin → DebugView, use Google's Tag Assistant on your store to watch events fire live through checkout.</li>
+  <li>Run the reconciliation: GA4 purchase count vs. Shopify order count over the same 48 hours. A 10–30% GA4 undercount is normal life with ad blockers and consent; 70–100% missing is a broken implementation.</li>
+</ol>
+
+<div class="callout">
+  <strong>Why this one stings:</strong> GA4 purchase data feeds Google Ads smart bidding on many stores. When purchases stop flowing, bidding algorithms optimize on stale signals — so the breakage doesn't just blind you, it actively degrades campaign performance until someone notices.
+</div>
+
+<div class="cta">
+  <h2>Notice in minutes, not weeks</h2>
+  <p>PixelVitals continuously reconciles what GA4, Meta, and TikTok report against your actual Shopify orders and alerts you the moment purchase events go quiet — before the bidding algorithms drift and before the wasted spend piles up. Nothing added to your storefront.</p>
+  <a class="btn" href="/#early">Get early access — $19/mo locked for life</a>
+</div>
+</main>
+<footer>© 2026 PixelVitals · <a href="/">pixelvitals.com</a> · <a href="mailto:hello@pixelvitals.com">hello@pixelvitals.com</a></footer>
+</body>
+</html>
