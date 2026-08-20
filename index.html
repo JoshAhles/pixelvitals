@@ -65,6 +65,8 @@ nav.hidden{transform:translateY(-100%)}
 
 /* form */
 form.signup{display:flex;gap:10px;max-width:520px;flex-wrap:wrap}
+form.signup select{flex:1;min-width:170px;background:var(--card);border:1px solid var(--line);border-radius:8px;color:var(--muted);font:400 15px "IBM Plex Sans",sans-serif;padding:13px 12px;outline:none}
+form.signup select:valid{color:var(--ink)}
 form.signup input{flex:1;min-width:220px;background:var(--card);border:1px solid var(--line);border-radius:8px;color:var(--ink);font:400 15.5px "IBM Plex Sans",sans-serif;padding:13px 16px;outline:none;transition:border-color .15s}
 form.signup input:focus{border-color:var(--green)}
 .formnote{font-size:13px;color:var(--muted);margin-top:12px}
@@ -135,9 +137,16 @@ input.hp{display:none}
   <h1>Your pixel <span class="dead">broke</span>&nbsp;a week ago. Nobody told&nbsp;you. <span class="live">Until&nbsp;now.</span></h1>
   <p class="sub">Meta, Google and TikTok tracking can silently stop firing while everything still says “connected” — and you find out days later, after the wasted spend. PixelVitals watches your tracking around the clock and alerts you the moment something breaks.</p>
   <div class="cta">
-    <form class="signup" id="form-hero" action="https://formspree.io/f/FORM_ID" method="POST">
+    <form class="signup" id="form-hero" action="https://formspree.io/f/xqpznpbz" method="POST">
       <input type="email" name="email" required placeholder="you@yourstore.com" aria-label="Email address">
       <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
+      <select name="ad_spend" required aria-label="Monthly ad spend">
+        <option value="" disabled selected>Monthly ad spend</option>
+        <option>Under $500/mo</option>
+        <option>$500–2k/mo</option>
+        <option>$2k–10k/mo</option>
+        <option>$10k+/mo</option>
+      </select>
       <button class="btn big" type="submit">Get early access</button>
     </form>
     <div class="success" id="ok-hero">✓ You're on the list — we'll be in touch before launch.</div>
@@ -213,9 +222,16 @@ input.hp{display:none}
   <h2 class="reveal" style="font-size:clamp(1.8rem,3.6vw,2.7rem)">Stop being the last to know.</h2>
   <p class="sub reveal">Join the early-access list — founders lock $19/mo for life.</p>
   <div style="display:flex;justify-content:center;margin-top:30px">
-    <form class="signup" id="form-footer" action="https://formspree.io/f/FORM_ID" method="POST">
+    <form class="signup" id="form-footer" action="https://formspree.io/f/xqpznpbz" method="POST">
       <input type="email" name="email" required placeholder="you@yourstore.com" aria-label="Email address">
       <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
+      <select name="ad_spend" required aria-label="Monthly ad spend">
+        <option value="" disabled selected>Monthly ad spend</option>
+        <option>Under $500/mo</option>
+        <option>$500–2k/mo</option>
+        <option>$2k–10k/mo</option>
+        <option>$10k+/mo</option>
+      </select>
       <button class="btn big" type="submit">Get early access</button>
     </form>
   </div>
@@ -248,6 +264,7 @@ for (const id of ['hero', 'footer']) {
   const form = document.getElementById('form-' + id);
   form.addEventListener('submit', async ev => {
     ev.preventDefault();
+    if (performance.now() < 3000) return; // bots submit instantly; humans never can
     const btn = form.querySelector('button');
     btn.disabled = true; btn.textContent = 'Joining…';
     try {
