@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PixelVitals — Know the moment your tracking breaks</title>
+<meta name="description" content="PixelVitals watches your Meta, Google & TikTok tracking around the clock and alerts you the moment it silently breaks — before it costs you a week of ad spend.">
+<meta property="og:title" content="PixelVitals — Know the moment your tracking breaks">
+<meta property="og:description" content="Your pixel can stop firing with zero warning while everything still says 'connected'. PixelVitals alerts you the moment it happens.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pixelvitals.com">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#0B0F0E; --panel:#10201A00; --card:#111917; --card2:#0E1513;
+  --ink:#E9F0EC; --muted:#93A49C; --line:#1E2B26;
+  --green:#3DDC97; --green-dim:#1C4A38; --red:#E06E57; --amber:#E3B341;
+  --maxw:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--green);text-decoration:none}
+h1,h2,h3{font-family:"Sora",sans-serif;line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.015em}
+p{margin:0}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:96px 0}
+.eyebrow{font:500 12px/1 "IBM Plex Mono",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--green)}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:transform .35s ease;backdrop-filter:blur(12px);background:rgba(11,15,14,.72);border-bottom:1px solid var(--line)}
+nav.hidden{transform:translateY(-100%)}
+.navin{max-width:var(--maxw);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font:700 18px "Sora",sans-serif;color:var(--ink);display:flex;align-items:center;gap:9px}
+.logo .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:beat 2.2s infinite}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.45)}24%{transform:scale(1)}}
+.navlinks{display:flex;gap:26px;align-items:center;font-size:14.5px}
+.navlinks a{color:var(--muted)}
+.navlinks a:hover{color:var(--ink)}
+.btn{display:inline-block;background:var(--green);color:#07120D;font:600 15px "IBM Plex Sans",sans-serif;padding:11px 22px;border-radius:8px;border:none;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(61,220,151,.28)}
+.btn.big{font-size:16.5px;padding:14px 28px}
+
+/* hero */
+.hero{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:120px 0 60px}
+.hero h1{font-size:clamp(2.5rem,6.2vw,4.6rem);font-weight:800;max-width:14ch}
+.hero h1 .dead{color:var(--red)}
+.hero h1 .live{color:var(--green)}
+.hero .sub{font-size:clamp(1.05rem,1.6vw,1.3rem);color:var(--muted);max-width:52ch;margin-top:22px}
+.hero .cta{margin-top:36px}
+.ekg{position:absolute;inset:auto 0 0 0;height:200px;opacity:.9;pointer-events:none}
+.ekg svg{width:100%;height:100%}
+.ekg path{fill:none;stroke:var(--green);stroke-width:2;filter:drop-shadow(0 0 6px rgba(61,220,151,.5))}
+.ekg .flat{stroke:var(--red);filter:drop-shadow(0 0 6px rgba(224,110,87,.45))}
+@media (prefers-reduced-motion: no-preference){
+  .ekg path{stroke-dasharray:1600;stroke-dashoffset:1600;animation:trace 6s linear infinite}
+  @keyframes trace{to{stroke-dashoffset:0}}
+}
+.badge{display:inline-flex;align-items:center;gap:8px;font:500 12.5px "IBM Plex Mono",monospace;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:7px 14px;margin-bottom:26px}
+.badge b{color:var(--green);font-weight:500}
+
+/* form */
+form.signup{display:flex;gap:10px;max-width:520px;flex-wrap:wrap}
+form.signup input{flex:1;min-width:220px;background:var(--card);border:1px solid var(--line);border-radius:8px;color:var(--ink);font:400 15.5px "IBM Plex Sans",sans-serif;padding:13px 16px;outline:none;transition:border-color .15s}
+form.signup input:focus{border-color:var(--green)}
+.formnote{font-size:13px;color:var(--muted);margin-top:12px}
+.success{display:none;background:var(--green-dim);border:1px solid var(--green);color:var(--ink);border-radius:8px;padding:14px 18px;max-width:520px}
+
+/* quotes */
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:40px}
+.quote{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.quote p{font-size:15.5px}
+.quote .who{font:400 12.5px "IBM Plex Mono",monospace;color:var(--muted)}
+.quote .sev{width:34px;height:3px;background:var(--red);border-radius:2px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:44px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:26px 22px}
+.step .k{font:500 12px "IBM Plex Mono",monospace;color:var(--green);letter-spacing:.12em}
+.step h3{font-size:1.15rem;margin:12px 0 10px}
+.step p{color:var(--muted);font-size:15px}
+
+/* alert demo */
+.alertcard{background:var(--card2);border:1px solid var(--line);border-left:3px solid var(--red);border-radius:10px;padding:20px 22px;max-width:640px;margin:40px auto 0;font-size:15px}
+.alertcard .hd{display:flex;align-items:center;gap:10px;font:500 13px "IBM Plex Mono",monospace;color:var(--red);margin-bottom:10px}
+.alertcard .hd .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:beat 1.4s infinite}
+.alertcard b{color:var(--ink)}
+.alertcard .est{color:var(--amber)}
+
+/* pricing */
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin-top:44px;max-width:720px;margin-left:auto;margin-right:auto}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:30px 26px;display:flex;flex-direction:column;gap:16px}
+.plan.hot{border-color:var(--green)}
+.plan .price{font:700 2.3rem "Sora",sans-serif}
+.plan .price span{font:400 15px "IBM Plex Sans",sans-serif;color:var(--muted)}
+.plan ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:15px;color:var(--muted)}
+.plan li::before{content:"✓  ";color:var(--green)}
+.tag{align-self:flex-start;font:500 11.5px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#07120D;background:var(--green);border-radius:5px;padding:4px 9px}
+
+/* faq */
+.faq{max-width:720px;margin:40px auto 0;display:flex;flex-direction:column;gap:10px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.faq p{color:var(--muted);margin-top:12px;font-size:15.5px}
+
+/* reveal */
+@media (prefers-reduced-motion: no-preference){
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+}
+.center{text-align:center}
+.center .sub{color:var(--muted);max-width:56ch;margin:18px auto 0;font-size:1.05rem}
+footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+input.hp{display:none}
+</style>
+</head>
+<body>
+
+<nav id="nav"><div class="navin">
+  <span class="logo"><span class="dot"></span>PixelVitals</span>
+  <div class="navlinks">
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a class="btn" href="#early">Get early access</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="badge"><b>●</b> Built for Shopify stores running paid ads</div>
+  <h1>Your pixel <span class="dead">broke</span>&nbsp;a week ago. Nobody told&nbsp;you. <span class="live">Until&nbsp;now.</span></h1>
+  <p class="sub">Meta, Google and TikTok tracking can silently stop firing while everything still says “connected” — and you find out days later, after the wasted spend. PixelVitals watches your tracking around the clock and alerts you the moment something breaks.</p>
+  <div class="cta">
+    <form class="signup" id="form-hero" action="https://formspree.io/f/FORM_ID" method="POST">
+      <input type="email" name="email" required placeholder="you@yourstore.com" aria-label="Email address">
+      <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
+      <button class="btn big" type="submit">Get early access</button>
+    </form>
+    <div class="success" id="ok-hero">✓ You're on the list — we'll be in touch before launch.</div>
+    <p class="formnote">Early-access founders lock <b>$19/mo for life</b>. No spam, no card.</p>
+  </div>
+</div>
+<div class="ekg" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="none">
+  <path d="M0,100 L120,100 L140,60 L160,140 L180,100 L340,100 L360,55 L380,145 L400,100 L560,100 L580,58 L600,142 L620,100 L700,100" />
+  <path class="flat" d="M700,100 L1200,100" />
+</svg></div>
+</header>
+
+<section id="pain"><div class="wrap">
+  <span class="eyebrow reveal">The silent failure</span>
+  <h2 class="reveal" style="font-size:clamp(1.7rem,3.4vw,2.5rem);margin-top:14px;max-width:24ch">This happens to real stores, constantly.</h2>
+  <div class="quotes">
+    <div class="quote reveal"><span class="sev"></span><p>“My tracking was not working for more than one week. This cost me valuable data and messed up campaigns I was spending hundreds of dollars on.”</p><span class="who">Shopify merchant · Meta app review</span></div>
+    <div class="quote reveal"><span class="sev"></span><p>“Tracked perfectly until September 6th” — then 37 real sales recorded as zero purchases over four days before anyone noticed.</p><span class="who">Shopify Community</span></div>
+    <div class="quote reveal"><span class="sev"></span><p>“How do you catch it when your Meta Pixel / GA4 / CAPI quietly stops firing?”</p><span class="who">Shopify Community · August 2026 — top replies: spreadsheets and weekly test purchases</span></div>
+  </div>
+  <p class="reveal" style="color:var(--muted);margin-top:28px;max-width:62ch">Shopify can even throttle a pixel's data flow with no banner, no email, no admin warning — it still shows “connected” while conversion events silently stop. The platforms will never alert you that their own integration broke. That's the whole reason PixelVitals exists.</p>
+</div></section>
+
+<section id="how" style="background:var(--card2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap center">
+  <span class="eyebrow reveal">How it works</span>
+  <h2 class="reveal" style="font-size:clamp(1.7rem,3.4vw,2.5rem);margin-top:14px">We don't touch your tracking.<br>We watch it.</h2>
+  <p class="sub reveal">No pixel replacement, no new snippets, no migration. PixelVitals runs alongside whatever setup you already have.</p>
+  <div class="steps">
+    <div class="step reveal"><div class="k">01 · CONNECT</div><h3>One-click install</h3><p>Connect your store and the channels you advertise on — Meta, Google, TikTok. Nothing on your storefront changes.</p></div>
+    <div class="step reveal"><div class="k">02 · MONITOR</div><h3>Events vs. reality</h3><p>We continuously compare what your pixels report against your actual Shopify orders — the same check smart merchants build in spreadsheets, automated and always on.</p></div>
+    <div class="step reveal"><div class="k">03 · ALERT</div><h3>Know in minutes</h3><p>The moment events go silent or drift from reality, you get an alert saying what broke, when, and the estimated ad spend flying blind since.</p></div>
+  </div>
+  <div class="alertcard reveal mono">
+    <div class="hd"><span class="pulse-dot"></span>PIXELVITALS ALERT · 9:42 AM</div>
+    <b>Meta Purchase events stopped firing</b> on yourstore.com at 6:17 AM.<br>
+    Shopify recorded <b>11 orders</b> since — Meta has seen <b>0</b>.<br>
+    <span class="est">≈ $412 of attributed revenue untracked so far.</span>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap center">
+  <span class="eyebrow reveal">Pricing</span>
+  <h2 class="reveal" style="font-size:clamp(1.7rem,3.4vw,2.5rem);margin-top:14px">Cheaper than one hour of broken tracking</h2>
+  <p class="sub reveal">If you spend $1,000+/mo on ads, a single silent week costs more than a year of PixelVitals.</p>
+  <div class="plans">
+    <div class="plan reveal">
+      <h3>Starter</h3>
+      <div class="price">$19<span>/mo</span></div>
+      <ul><li>1 store</li><li>Meta, Google &amp; TikTok monitoring</li><li>Daily health checks</li><li>Email alerts</li></ul>
+      <a class="btn" href="#early" style="text-align:center">Get early access</a>
+    </div>
+    <div class="plan hot reveal">
+      <span class="tag">Founders' rate — locked for life</span>
+      <h3>Pro</h3>
+      <div class="price">$39<span>/mo</span></div>
+      <ul><li>Everything in Starter</li><li>Hourly checks</li><li>SMS &amp; Slack alerts</li><li>Untracked-revenue estimates</li></ul>
+      <a class="btn" href="#early" style="text-align:center">Get early access</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="faq-s" style="background:var(--card2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap center">
+  <span class="eyebrow reveal">Questions</span>
+  <div class="faq">
+    <details class="reveal"><summary>Does this replace my pixel or tracking apps?</summary><p>No — that's the point. PixelVitals changes nothing about your setup. It works alongside the official Meta/Google/TikTok apps and any pixel app you already use, and simply tells you when any of it stops working.</p></details>
+    <details class="reveal"><summary>Doesn't Meta or Google already alert me?</summary><p>Rarely, and never reliably. Their status pages can show “connected” while events silently stop — and none of them compare reported events against your actual Shopify orders, which is the only check that catches under-reporting.</p></details>
+    <details class="reveal"><summary>Will it slow down my store?</summary><p>No. Nothing is injected into your storefront. Monitoring happens server-side against APIs, not in your customers' browsers.</p></details>
+    <details class="reveal"><summary>When does it launch?</summary><p>Early access opens to the waitlist first, in order. Founders lock the $19/mo rate for life and get direct input on which channels and alerts we build next.</p></details>
+  </div>
+</div></section>
+
+<section id="early"><div class="wrap center">
+  <h2 class="reveal" style="font-size:clamp(1.8rem,3.6vw,2.7rem)">Stop being the last to know.</h2>
+  <p class="sub reveal">Join the early-access list — founders lock $19/mo for life.</p>
+  <div style="display:flex;justify-content:center;margin-top:30px">
+    <form class="signup" id="form-footer" action="https://formspree.io/f/FORM_ID" method="POST">
+      <input type="email" name="email" required placeholder="you@yourstore.com" aria-label="Email address">
+      <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
+      <button class="btn big" type="submit">Get early access</button>
+    </form>
+  </div>
+  <div class="success" id="ok-footer" style="margin:20px auto 0">✓ You're on the list — we'll be in touch before launch.</div>
+</div></section>
+
+<footer><div class="wrap">
+  <span><span style="color:var(--green)">●</span> PixelVitals — tracking health monitoring for Shopify</span>
+  <span>© 2026 PixelVitals · <a href="mailto:hello@pixelvitals.com">hello@pixelvitals.com</a></span>
+</div></footer>
+
+<script>
+// sticky nav: hide on scroll down, reveal on scroll up
+let lastY = 0;
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => {
+  const y = scrollY;
+  nav.classList.toggle('hidden', y > 120 && y > lastY);
+  lastY = y;
+}, {passive: true});
+
+// scroll reveals
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold: .12});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// waitlist forms → Formspree, inline success
+for (const id of ['hero', 'footer']) {
+  const form = document.getElementById('form-' + id);
+  form.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const btn = form.querySelector('button');
+    btn.disabled = true; btn.textContent = 'Joining…';
+    try {
+      const r = await fetch(form.action, {method: 'POST', body: new FormData(form), headers: {Accept: 'application/json'}});
+      if (!r.ok) throw new Error();
+      form.style.display = 'none';
+      document.getElementById('ok-' + id).style.display = 'block';
+    } catch {
+      btn.disabled = false; btn.textContent = 'Get early access';
+      alert('Something went wrong — email hello@pixelvitals.com and we\'ll add you by hand.');
+    }
+  });
+}
+</script>
+</body>
+</html>
