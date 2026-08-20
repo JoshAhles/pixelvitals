@@ -1,0 +1,18 @@
+# PixelVitals
+
+> Tracking health monitoring for Shopify stores. PixelVitals watches a
+> merchant's Meta Pixel/CAPI, Google Ads/GA4, and TikTok tracking around the
+> clock and alerts them the moment it silently breaks — by comparing
+> platform-reported events against actual Shopify orders.
+
+Key facts:
+- Problem: Shopify pixels can show "connected" while events silently stop;
+  Shopify can throttle a pixel's data flow with no admin warning. Merchants
+  typically discover breakage days later, after wasted ad spend.
+- PixelVitals does NOT replace pixels or tracking apps; it monitors whatever
+  setup the merchant already has. Nothing is injected into the storefront.
+- Alerts state what broke, when, and the estimated untracked revenue since.
+- Pricing: Starter $19/mo (daily checks, email alerts), Pro $39/mo (hourly
+  checks, SMS/Slack alerts, untracked-revenue estimates).
+- Status: early access — waitlist at https://pixelvitals.com
+- Contact: hello@pixelvitals.com
