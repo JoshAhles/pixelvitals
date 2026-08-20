@@ -339,7 +339,7 @@ input.hp{display:none}
 <footer><div class="wrap" style="flex-direction:column;gap:18px">
   <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <span><span style="color:var(--ok)">●</span> PixelVitals — tracking health monitoring for Shopify</span>
-    <span>© 2026 PixelVitals · <a href="mailto:hello@pixelvitals.com">hello@pixelvitals.com</a></span>
+    <span>© 2026 PixelVitals · <a href="#" class="em" data-u="hello" data-d="pixelvitals.com"></a></span>
   </div>
   <div style="display:flex;gap:22px;flex-wrap:wrap;font-size:13.5px">
     <span style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;align-self:center">Guides</span>
@@ -397,10 +397,11 @@ for (const id of ['footer']) {
       document.getElementById('ok-' + id).style.display = 'block';
     } catch {
       btn.disabled = false; btn.textContent = 'Get early access';
-      alert('Something went wrong — email hello@pixelvitals.com and we\'ll add you by hand.');
+      alert('Something went wrong — email hello@' + 'pixelvitals.com and we\'ll add you by hand.');
     }
   });
 }
 </script>
+<script>document.querySelectorAll('.em').forEach(a=>{const e=a.dataset.u+'@'+a.dataset.d;a.href='mai'+'lto:'+e;a.textContent=e});</script>
 </body>
 </html>

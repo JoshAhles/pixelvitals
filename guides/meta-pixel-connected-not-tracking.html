@@ -82,6 +82,7 @@ footer{max-width:720px;margin:0 auto;padding:0 24px 48px;color:var(--muted);font
   <a class="btn" href="/#early">Get early access — $19/mo locked for life</a>
 </div>
 </main>
-<footer>© 2026 PixelVitals · <a href="/">pixelvitals.com</a> · <a href="mailto:hello@pixelvitals.com">hello@pixelvitals.com</a></footer>
+<footer>© 2026 PixelVitals · <a href="/">pixelvitals.com</a> · <a href="#" class="em" data-u="hello" data-d="pixelvitals.com"></a></footer>
+<script>document.querySelectorAll('.em').forEach(a=>{const e=a.dataset.u+'@'+a.dataset.d;a.href='mai'+'lto:'+e;a.textContent=e});</script>
 </body>
 </html>
